@@ -80,11 +80,7 @@ export class AmlWebStack extends Stack {
         requireUppercase: true,
         tempPasswordValidity: Duration.days(3),
       },
-      mfa: cognito.Mfa.REQUIRED,
-      mfaSecondFactor: {
-        sms: false,
-        otp: true,
-      },
+      mfa: cognito.Mfa.OFF,
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
       removalPolicy: RemovalPolicy.DESTROY,
     });
