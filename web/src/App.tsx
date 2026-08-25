@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Activity,
   AlertTriangle,
@@ -16,8 +16,10 @@ import {
   Layers3,
   LoaderCircle,
   LogOut,
+  Pause,
   Play,
   Radar,
+  Radio,
   RefreshCw,
   ShieldCheck,
   Sparkles,
@@ -75,6 +77,129 @@ const SUSPECTS = [
     alibi:
       "Midnight deposits are normal. Taco emergencies don't follow banking hours.",
   },
+] as const;
+
+const TRANSACTION_FEED = [
+  {
+    id: 'TXN-FLX-001',
+    entity: 'FELIX',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 9200,
+    signal: true,
+  },
+  {
+    id: 'TXN-FLX-002',
+    entity: 'FELIX',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 9500,
+    signal: true,
+  },
+  {
+    id: 'TXN-FLX-003',
+    entity: 'FELIX',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 9700,
+    signal: true,
+  },
+  {
+    id: 'TXN-FLX-004',
+    entity: 'FELIX',
+    route: 'US → NL',
+    channel: 'WIRE',
+    amount: 27900,
+    signal: true,
+  },
+  {
+    id: 'TXN-MAR-001',
+    entity: 'MARIO',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 3800,
+    signal: false,
+  },
+  {
+    id: 'TXN-MAR-002',
+    entity: 'MARIO',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 6200,
+    signal: false,
+  },
+  {
+    id: 'TXN-MAR-003',
+    entity: 'MARIO',
+    route: 'US → US',
+    channel: 'WIRE',
+    amount: 12000,
+    signal: false,
+  },
+  {
+    id: 'TXN-LAR-001',
+    entity: 'LARRY',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 2350,
+    signal: false,
+  },
+  {
+    id: 'TXN-LAR-002',
+    entity: 'LARRY',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 2110,
+    signal: false,
+  },
+  {
+    id: 'TXN-LAR-003',
+    entity: 'LARRY',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 2480,
+    signal: false,
+  },
+  {
+    id: 'TXN-LAR-004',
+    entity: 'LARRY',
+    route: 'US → US',
+    channel: 'WIRE',
+    amount: 3400,
+    signal: false,
+  },
+  {
+    id: 'TXN-TON-001',
+    entity: 'TONY',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 6400,
+    signal: false,
+  },
+  {
+    id: 'TXN-TON-002',
+    entity: 'TONY',
+    route: 'US → US',
+    channel: 'CASH',
+    amount: 7200,
+    signal: false,
+  },
+  {
+    id: 'TXN-TON-003',
+    entity: 'TONY',
+    route: 'US → US',
+    channel: 'WIRE',
+    amount: 11000,
+    signal: false,
+  },
+] as const;
+
+const STREAM_METRICS = [
+  { value: '$113.2K', label: 'case value analyzed' },
+  { value: '13', label: 'counterparties correlated' },
+  { value: '2', label: 'countries represented' },
+  { value: '4', label: 'entities under review' },
+  { value: '2', label: 'validated signals' },
 ] as const;
 
 interface AppProps {
@@ -187,6 +312,146 @@ function SuspectCard({
   );
 }
 
+function LiveTransactionStream() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return undefined;
+    const interval = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % TRANSACTION_FEED.length);
+    }, 1400);
+    return () => window.clearInterval(interval);
+  }, [isPaused]);
+
+  const visibleTransactions = Array.from({ length: 8 }, (_, offset) => {
+    const index = (activeIndex + offset) % TRANSACTION_FEED.length;
+    return TRANSACTION_FEED[index];
+  });
+
+  return (
+    <section className="live-stream-section" aria-labelledby="live-stream-title">
+      <div className="stream-title-row">
+        <div>
+          <span className="section-label">Synthetic transaction replay</span>
+          <h2 id="live-stream-title">Live correlation feed</h2>
+          <p>
+            The embedded case events are replayed continuously to show how raw
+            activity narrows into evidence for qualified review.
+          </p>
+        </div>
+        <div className="stream-controls">
+          <span className={`stream-status${isPaused ? ' paused' : ''}`}>
+            <span aria-hidden="true" />
+            {isPaused ? 'Replay paused' : 'Processing synthetic events'}
+          </span>
+          <button
+            type="button"
+            className="stream-toggle"
+            aria-pressed={isPaused}
+            onClick={() => setIsPaused((current) => !current)}
+          >
+            {isPaused ? (
+              <Play aria-hidden="true" />
+            ) : (
+              <Pause aria-hidden="true" />
+            )}
+            {isPaused ? 'Resume' : 'Pause'}
+          </button>
+        </div>
+      </div>
+
+      <div className="stream-metrics">
+        {STREAM_METRICS.map((metric) => (
+          <div className="stream-metric" key={metric.label}>
+            <strong>{metric.value}</strong>
+            <span>{metric.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="stream-grid">
+        <div className="stream-panel transaction-panel">
+          <div className="stream-panel-heading">
+            <div>
+              <span>Case event stream</span>
+              <strong>SYNTH-AML-005 transaction firehose</strong>
+            </div>
+            <span className="event-position">
+              <Radio aria-hidden="true" />
+              Event {activeIndex + 1} of {TRANSACTION_FEED.length}
+            </span>
+          </div>
+          <div className="transaction-table-wrap">
+            <table className="transaction-table">
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Entity</th>
+                  <th>Route</th>
+                  <th>Channel</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleTransactions.map((transaction, offset) => (
+                  <tr
+                    className={`${offset === 0 ? 'is-current' : ''}${
+                      transaction.signal ? ' is-signal' : ''
+                    }`}
+                    key={`${transaction.id}-${offset}`}
+                  >
+                    <td>{transaction.id}</td>
+                    <td>{transaction.entity}</td>
+                    <td>{transaction.route}</td>
+                    <td>{transaction.channel}</td>
+                    <td>{formatUsd(transaction.amount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside className="stream-panel funnel-panel">
+          <div className="stream-panel-heading">
+            <div>
+              <span>Investigation funnel</span>
+              <strong>From activity to review</strong>
+            </div>
+          </div>
+          <ol className="funnel-list">
+            <li>
+              <strong>14</strong>
+              <span>synthetic transactions</span>
+            </li>
+            <li>
+              <strong>10</strong>
+              <span>cash credits compared</span>
+            </li>
+            <li>
+              <strong>4</strong>
+              <span>supporting evidence records</span>
+            </li>
+            <li>
+              <strong>2</strong>
+              <span>validated signals</span>
+            </li>
+            <li>
+              <strong>1</strong>
+              <span>qualified human review</span>
+            </li>
+          </ol>
+          <p className="stream-disclaimer">
+            Simulation only. No production accounts, payment rails, or external
+            transaction systems are connected.
+          </p>
+        </aside>
+      </div>
+    </section>
+  );
+}
+
 function EmptyResult({
   isRunning,
   runAnalysis,
@@ -272,6 +537,8 @@ function EmptyResult({
           </div>
         </div>
       </section>
+
+      <LiveTransactionStream />
 
       <section className="protocol-strip" aria-label="Investigation workflow">
         <div className="protocol-step active">
