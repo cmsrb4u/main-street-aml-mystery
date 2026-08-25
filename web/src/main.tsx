@@ -8,11 +8,25 @@ import App from './App';
 import type { RuntimeConfig } from './types';
 import './styles.css';
 
+const LOCAL_PREVIEW_CONFIG: RuntimeConfig = {
+  apiEndpoint: 'http://localhost:3000/analyze',
+  region: 'us-east-2',
+  signingService: 'lambda',
+  userPoolId: 'local',
+  userPoolClientId: 'local',
+  identityPoolId: 'local',
+};
+
 function Root() {
   const [config, setConfig] = useState<RuntimeConfig | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const isLocalPreview =
+    import.meta.env.DEV &&
+    new URLSearchParams(window.location.search).has('preview');
 
   useEffect(() => {
+    if (isLocalPreview) return;
+
     fetch('/runtime-config.json', { cache: 'no-store' })
       .then((response) => {
         if (!response.ok) throw new Error('Runtime configuration is unavailable.');
@@ -36,7 +50,17 @@ function Root() {
           error instanceof Error ? error.message : 'Unable to load the app.',
         );
       });
-  }, []);
+  }, [isLocalPreview]);
+
+  if (isLocalPreview) {
+    return (
+      <App
+        config={LOCAL_PREVIEW_CONFIG}
+        username="Detective Dan"
+        signOut={() => undefined}
+      />
+    );
+  }
 
   if (loadError) {
     return <div className="startup-error">{loadError}</div>;

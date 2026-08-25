@@ -1,17 +1,26 @@
 import { useState } from 'react';
 import {
+  Activity,
   AlertTriangle,
   ArrowRight,
-  Check,
+  BadgeCheck,
   CheckCircle2,
+  ChevronRight,
   CircleUserRound,
+  Clock3,
+  Database,
+  FileSearch,
+  Fingerprint,
   Flower2,
   Landmark,
+  Layers3,
   LoaderCircle,
   LogOut,
   Play,
-  Search,
+  Radar,
+  RefreshCw,
   ShieldCheck,
+  Sparkles,
   UtensilsCrossed,
   WashingMachine,
   Wrench,
@@ -34,6 +43,8 @@ const SUSPECTS = [
     id: 'FELIX',
     owner: 'Felix Flowers',
     business: 'Petal Pushers',
+    category: 'Retail florist',
+    accent: 'rose',
     alibi:
       'I sell flowers. Of course I receive cash. Love is expensive—and panic-buying roses is my business model.',
   },
@@ -41,6 +52,8 @@ const SUSPECTS = [
     id: 'MARIO',
     owner: 'Mario Wrench',
     business: 'Pipe Dreams Plumbing',
+    category: 'Trade services',
+    accent: 'blue',
     alibi:
       'That $12,000 purchase was professional plumbing equipment. The heated cup holder was essential.',
   },
@@ -48,6 +61,8 @@ const SUSPECTS = [
     id: 'LARRY',
     owner: 'Larry Suds',
     business: 'Suds & Buds Laundromat',
+    category: 'Cash-intensive service',
+    accent: 'violet',
     alibi:
       'I run a laundromat. I launder clothes, not money. Frankly, this investigation feels targeted.',
   },
@@ -55,6 +70,8 @@ const SUSPECTS = [
     id: 'TONY',
     owner: 'Tony Salsa',
     business: 'Taco Emergency',
+    category: 'Quick-service restaurant',
+    accent: 'orange',
     alibi:
       "Midnight deposits are normal. Taco emergencies don't follow banking hours.",
   },
@@ -137,51 +154,186 @@ function FindingPanel({ finding }: { finding: Finding }) {
 
 function SuspectCard({
   suspect,
+  index,
 }: {
   suspect: (typeof SUSPECTS)[number];
+  index: number;
 }) {
   return (
-    <article className="suspect-card">
-      <div className="suspect-icon">
-        <SuspectIcon id={suspect.id} />
+    <article className={`suspect-card tone-${suspect.accent}`}>
+      <div className="suspect-card-topline">
+        <span className="suspect-number">0{index + 1}</span>
+        <span className="review-state">
+          <span aria-hidden="true" />
+          Awaiting review
+        </span>
       </div>
-      <div>
-        <span>{suspect.business}</span>
-        <h3>{suspect.owner}</h3>
+      <div className="suspect-identity">
+        <div className="suspect-icon">
+          <SuspectIcon id={suspect.id} />
+        </div>
+        <div>
+          <span>{suspect.business}</span>
+          <h3>{suspect.owner}</h3>
+          <small>{suspect.category}</small>
+        </div>
       </div>
-      <p>“{suspect.alibi}”</p>
+      <blockquote>“{suspect.alibi}”</blockquote>
+      <div className="suspect-card-footer">
+        <span>Open profile</span>
+        <ChevronRight aria-hidden="true" />
+      </div>
     </article>
   );
 }
 
-function EmptyResult() {
+function EmptyResult({
+  isRunning,
+  runAnalysis,
+}: {
+  isRunning: boolean;
+  runAnalysis: () => void;
+}) {
   return (
     <div className="mystery-intro">
       <section className="intro-hero">
-        <span className="section-label">Synthetic AML mystery</span>
-        <h1>Who Laundered It?</h1>
-        <p>
-          Four Main Street owners have convincing explanations. Let transaction
-          patterns and invoice support—not stereotypes—decide which trail needs
-          qualified review.
-        </p>
+        <div className="hero-copy">
+          <div className="hero-kicker">
+            <span className="live-dot" aria-hidden="true" />
+            Case file open
+            <span className="hero-kicker-divider" />
+            SYNTH-AML-005
+          </div>
+          <span className="section-label">Synthetic AML mystery</span>
+          <h1>
+            Who <em>laundered</em> it?
+          </h1>
+          <p>
+            Four Main Street owners. Four convincing stories. One money trail
+            that does not add up. Let evidence—not appearances—lead the review.
+          </p>
+          <div className="hero-actions">
+            <button
+              type="button"
+              className="hero-primary-button"
+              disabled={isRunning}
+              onClick={runAnalysis}
+            >
+              {isRunning ? (
+                <LoaderCircle className="spin" aria-hidden="true" />
+              ) : (
+                <Radar aria-hidden="true" />
+              )}
+              {isRunning ? 'Inspecting evidence' : 'Begin evidence scan'}
+            </button>
+            <span className="agent-ready">
+              <BadgeCheck aria-hidden="true" />
+              Grounded agent ready
+            </span>
+          </div>
+          <dl className="hero-stats">
+            <div>
+              <dt>Subjects</dt>
+              <dd>04</dd>
+            </div>
+            <div>
+              <dt>Evidence types</dt>
+              <dd>02</dd>
+            </div>
+            <div>
+              <dt>Decision</dt>
+              <dd>Human</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div className="hero-dossier" aria-hidden="true">
+          <div className="dossier-glow" />
+          <div className="dossier-card dossier-card-back">
+            <span>Evidence index</span>
+            <Database />
+          </div>
+          <div className="dossier-card dossier-card-middle">
+            <span>Transaction trail</span>
+            <Activity />
+          </div>
+          <div className="dossier-card dossier-card-front">
+            <div className="dossier-label">
+              <Fingerprint />
+              <span>Confidential case brief</span>
+            </div>
+            <strong>SYNTH<br />AML–005</strong>
+            <div className="dossier-lines">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="dossier-stamp">Synthetic</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="protocol-strip" aria-label="Investigation workflow">
+        <div className="protocol-step active">
+          <span>01</span>
+          <div>
+            <strong>Meet the lineup</strong>
+            <small>Review the business stories</small>
+          </div>
+        </div>
+        <ChevronRight aria-hidden="true" />
+        <div className="protocol-step">
+          <span>02</span>
+          <div>
+            <strong>Inspect the trail</strong>
+            <small>Compare transactions and invoices</small>
+          </div>
+        </div>
+        <ChevronRight aria-hidden="true" />
+        <div className="protocol-step">
+          <span>03</span>
+          <div>
+            <strong>Ground the decision</strong>
+            <small>Escalate for qualified review</small>
+          </div>
+        </div>
       </section>
 
       <section>
         <div className="section-heading">
           <div>
-            <span className="section-label">The lineup</span>
-            <h2>Four owners, one suspicious trail</h2>
+            <span className="section-label">Persons of interest</span>
+            <h2>The Main Street lineup</h2>
           </div>
           <span className="status-badge">
-            <Search aria-hidden="true" />
-            Evidence hidden until analysis
+            <Layers3 aria-hidden="true" />
+            Four linked business profiles
           </span>
         </div>
         <div className="suspect-grid">
-          {SUSPECTS.map((suspect) => (
-            <SuspectCard key={suspect.id} suspect={suspect} />
+          {SUSPECTS.map((suspect, index) => (
+            <SuspectCard key={suspect.id} suspect={suspect} index={index} />
           ))}
+        </div>
+      </section>
+
+      <section className="method-note">
+        <div className="method-icon">
+          <ShieldCheck aria-hidden="true" />
+        </div>
+        <div>
+          <span className="section-label">Investigation standard</span>
+          <h2>Follow the evidence, challenge the obvious answer.</h2>
+          <p>
+            The agent compares transaction velocity, cash behavior, outbound
+            movement, and invoice support. Names, occupations, and intuition
+            are never treated as proof.
+          </p>
+        </div>
+        <div className="method-control">
+          <span>Control posture</span>
+          <strong>Evidence grounded</strong>
+          <small>Human decision required</small>
         </div>
       </section>
     </div>
@@ -432,14 +584,23 @@ export default function App({ config, username, signOut }: AppProps) {
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark">
-            <Landmark aria-hidden="true" />
+            <Fingerprint aria-hidden="true" />
           </span>
           <div>
             <strong>Main Street AML Mystery</strong>
-            <span>Who Laundered It?</span>
+            <span>Evidence intelligence workspace</span>
           </div>
         </div>
+        <div className="topbar-case">
+          <span className="topbar-pulse" aria-hidden="true" />
+          <span>Case workspace</span>
+          <strong>SYNTH-AML-005</strong>
+        </div>
         <div className="user-menu">
+          <span className="secure-session">
+            <ShieldCheck aria-hidden="true" />
+            Secure session
+          </span>
           <CircleUserRound aria-hidden="true" />
           <span>{username}</span>
           <button type="button" className="icon-button" onClick={signOut}>
@@ -453,32 +614,42 @@ export default function App({ config, username, signOut }: AppProps) {
       <main className="workspace">
         <aside className="case-sidebar">
           <div className="case-title">
-            <span className="section-label">Active case</span>
-            <h1>SYNTH-AML-005</h1>
-            <span className="synthetic-badge">Synthetic mystery</span>
+            <div>
+              <span className="section-label">Active investigation</span>
+              <h1>SYNTH-AML-005</h1>
+            </div>
+            <span className="synthetic-badge">
+              <Sparkles aria-hidden="true" />
+              Synthetic
+            </span>
           </div>
           <dl className="case-facts">
             <div>
-              <dt>Investigator</dt>
+              <dt><CircleUserRound aria-hidden="true" /> Investigator</dt>
               <dd>Detective Dan Ledger</dd>
             </div>
             <div>
-              <dt>Location</dt>
+              <dt><Landmark aria-hidden="true" /> Location</dt>
               <dd>Main Street</dd>
             </div>
             <div>
-              <dt>Lineup</dt>
+              <dt><FileSearch aria-hidden="true" /> Review scope</dt>
               <dd>Four business owners</dd>
             </div>
             <div>
-              <dt>Question</dt>
-              <dd>Whose evidence produces a suspicious money trail?</dd>
+              <dt><Clock3 aria-hidden="true" /> Case status</dt>
+              <dd>Ready for evidence scan</dd>
             </div>
           </dl>
 
+          <div className="sidebar-section-heading">
+            <span>Subject lineup</span>
+            <small>4 profiles</small>
+          </div>
           <div className="mini-lineup">
-            {SUSPECTS.map((suspect) => (
-              <div key={suspect.id}>
+            {SUSPECTS.map((suspect, index) => (
+              <div key={suspect.id} className={`tone-${suspect.accent}`}>
+                <span className="lineup-index">0{index + 1}</span>
                 <span className="suspect-icon compact">
                   <SuspectIcon id={suspect.id} />
                 </span>
@@ -486,12 +657,21 @@ export default function App({ config, username, signOut }: AppProps) {
                   <strong>{suspect.owner}</strong>
                   <small>{suspect.business}</small>
                 </span>
+                <span className="lineup-state" aria-label="Awaiting review" />
               </div>
             ))}
           </div>
 
           <div className="prompt-area">
-            <label htmlFor="analysis-prompt">Detective Dan’s instruction</label>
+            <div className="prompt-heading">
+              <span className="prompt-heading-icon">
+                <Sparkles aria-hidden="true" />
+              </span>
+              <div>
+                <label htmlFor="analysis-prompt">Agent investigation brief</label>
+                <small>Set the focus for this evidence review</small>
+              </div>
+            </div>
             <textarea
               id="analysis-prompt"
               maxLength={2000}
@@ -500,7 +680,7 @@ export default function App({ config, username, signOut }: AppProps) {
             />
             <div className="prompt-meta">
               <span>{prompt.length}/2000</span>
-              <span>Read-only</span>
+              <span>Editable briefing</span>
             </div>
             <button
               type="button"
@@ -518,10 +698,11 @@ export default function App({ config, username, signOut }: AppProps) {
           </div>
 
           <div className="guardrail-note">
-            <Check aria-hidden="true" />
+            <ShieldCheck aria-hidden="true" />
             <p>
-              Synthetic learning asset. Signals support qualified review—not a
-              finding of guilt.
+              <strong>Human-in-the-loop control</strong>
+              Synthetic signals support qualified review—not a finding of
+              guilt.
             </p>
           </div>
         </aside>
@@ -529,8 +710,25 @@ export default function App({ config, username, signOut }: AppProps) {
         <section className="result-pane" aria-live="polite">
           {error && (
             <div className="error-banner" role="alert">
-              <AlertTriangle aria-hidden="true" />
-              <span>{error}</span>
+              <span className="error-icon">
+                <AlertTriangle aria-hidden="true" />
+              </span>
+              <div className="error-copy">
+                <strong>The evidence service did not respond</strong>
+                <span>
+                  {error} Your case is unchanged; check the connection and try
+                  the scan again.
+                </span>
+              </div>
+              <button
+                type="button"
+                className="error-retry"
+                disabled={isRunning}
+                onClick={runAnalysis}
+              >
+                <RefreshCw aria-hidden="true" />
+                Retry scan
+              </button>
               <button
                 type="button"
                 className="icon-button"
@@ -541,7 +739,11 @@ export default function App({ config, username, signOut }: AppProps) {
               </button>
             </div>
           )}
-          {result ? <Results result={result} /> : <EmptyResult />}
+          {result ? (
+            <Results result={result} />
+          ) : (
+            <EmptyResult isRunning={isRunning} runAnalysis={runAnalysis} />
+          )}
         </section>
       </main>
     </div>
