@@ -34,6 +34,12 @@ No long-lived AWS credentials or model credentials are sent to the browser.
 The web adapter has reserved concurrency set to two and accepts prompts up to
 2,000 characters.
 
+### Architecture diagrams
+
+- [System architecture and request flow](docs/architecture.md)
+- [AWS services and deployment topology](docs/aws-services.md)
+- [AML demonstration and validation business logic](docs/business-logic.md)
+
 ### Deploy the web stack
 
 Build the browser bundle before synthesizing or deploying the CDK stack:
@@ -50,7 +56,8 @@ AWS_PROFILE=your-profile AWS_REGION=us-east-2 \
 ```
 
 Create an invited user with a temporary password. Cognito requires the user to
-choose a permanent password and enroll an authenticator app on first sign-in.
+choose a permanent password on first sign-in. MFA is disabled in the current
+web stack configuration.
 
 ```bash
 AWS_PROFILE=your-profile AWS_REGION=us-east-2 \
@@ -72,6 +79,7 @@ https://<CLOUDFRONT_DOMAIN>
 ```
 amlgroundedagent/
 ├── AGENTS.md               # AI coding assistant context
+├── docs/                   # Architecture, AWS service, and business logic diagrams
 ├── agentcore/
 │   ├── agentcore.json      # Project config (agents, memories, credentials, gateways, evaluators)
 │   ├── aws-targets.json    # Deployment targets (account + region)
