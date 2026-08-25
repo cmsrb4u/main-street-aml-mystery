@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.agentcore.aws.dev/v1/agentcore.json",
+  "name": "amlgroundedagent",
+  "version": 1,
+  "managedBy": "CDK",
+  "tags": {
+    "agentcore:created-by": "agentcore-cli",
+    "agentcore:project-name": "amlgroundedagent"
+  },
+  "runtimes": [
+    {
+      "name": "aml_analysis",
+      "description": "Evidence-grounded synthetic AML analysis with OpenAI Agents SDK on Bedrock",
+      "build": "CodeZip",
+      "entrypoint": "main.py",
+      "codeLocation": "app/aml_grounded_agent/",
+      "runtimeVersion": "PYTHON_3_12",
+      "envVars": [
+        {
+          "name": "BEDROCK_MODEL",
+          "value": "openai.gpt-5.6-sol"
+        },
+        {
+          "name": "RUN_ANALYSIS_DEMO",
+          "value": "true"
+        }
+      ],
+      "networkMode": "PUBLIC",
+      "instrumentation": {
+        "enableOtel": true
+      },
+      "protocol": "HTTP",
+      "authorizerType": "AWS_IAM",
+      "additionalPolicies": [
+        "bedrock-invoke-policy.json"
+      ]
+    }
+  ],
+  "memories": [],
+  "knowledgeBases": [],
+  "credentials": [],
+  "evaluators": [],
+  "onlineEvalConfigs": [],
+  "agentCoreGateways": [],
+  "policyEngines": [],
+  "configBundles": [],
+  "abTests": [],
+  "harnesses": [],
+  "datasets": [],
+  "payments": []
+}

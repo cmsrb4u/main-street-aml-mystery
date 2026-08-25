@@ -1,0 +1,17 @@
+.cache/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+node_modules/
+dist/
+cdk.out/
+*.tsbuildinfo
+agentcore/.cli/*
+agentcore/*.zip
+agentcore/*/staging/
+agentcore/.cache/
+agentcore/cdk/cdk.out/
+agentcore/cdk/dist/
+agentcore/cdk/node_modules/

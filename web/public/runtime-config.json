@@ -1,0 +1,8 @@
+{
+  "apiEndpoint": "http://localhost:3000/analyze",
+  "region": "us-east-2",
+  "signingService": "lambda",
+  "userPoolId": "local",
+  "userPoolClientId": "local",
+  "identityPoolId": "local"
+}

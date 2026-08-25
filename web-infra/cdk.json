@@ -1,0 +1,8 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/app.ts",
+  "context": {
+    "account": "123456789012",
+    "region": "us-east-2",
+    "runtimeArn": "arn:aws:bedrock-agentcore:us-east-2:123456789012:runtime/replace-me"
+  }
+}
